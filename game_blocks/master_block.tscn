@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://game_blocks/master_block.gd" type="Script" id=1]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 0, 0 )
+
+[node name="Block" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="BlockArea" type="Area2D" parent="."]
+
+[node name="CollisionArea" type="CollisionShape2D" parent="BlockArea"]
+position = Vector2( 64.6554, 60.8799 )
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DebugHandler" type="Node2D" parent="."]
+
+[node name="DebugLabel_ArrayPos" type="Label" parent="DebugHandler"]
+margin_bottom = 14.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
