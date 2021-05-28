@@ -1,8 +1,9 @@
+class_name GameWorld
 extends Node
 
 const TestBlock = preload("res://game_blocks/master_block.tscn")
 
-var tile_pixel_size = 50
+var tile_pixel_size = 100
 var block_pixel_buffer = tile_pixel_size/10
 var world_origin = Vector2(0,0)
 var world_boundary = Vector2(2000,2000)
@@ -19,11 +20,34 @@ var total_blocks = block_row_length * block_column_length
 onready var background = $Background
 onready var block_parent = $block_parent
 
+
+###############################################################################
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	establish_background()
-	print("total blocks ", total_blocks)
+	if global_var.enable_world_spawn_log: print("total blocks ", total_blocks)
 	add_all_blocks()
+
+
+func _input(event):
+	if event is InputEventMouseMotion and global_var.grabbed_block is GameBlock:
+		global_var.grabbed_block.position = event.position
+
+###############################################################################
+
+
+func _on_BlockGrabbed():
+	pass
+
+
+func _on_BlockReleased():
+	pass
+
+
+###############################################################################
+
 
 func establish_background():
 	background.rect_size = world_boundary
@@ -49,12 +73,22 @@ func add_all_blocks():
 		spawn_at.y = base_vertical_buffer
 		current_array_pos.y = 0
 	
-	print("done! spawned ", total_blocks_spawned, " blocks!")
+	if global_var.enable_world_spawn_log: print("done! spawned ", total_blocks_spawned, " blocks!")
 
 func add_new_block(spawn_loc, given_array_pos):
 	var NewBlockInstance = TestBlock.instance()
 	NewBlockInstance.block_size = Vector2(block_size, block_size)
 	NewBlockInstance.array_pos = given_array_pos
 	NewBlockInstance.position = Vector2(spawn_loc.x+(block_pixel_buffer/2), spawn_loc.y+(block_pixel_buffer/2))
+	NewBlockInstance.connect("block_grabbed",self,"_on_BlockGrabbed")
+	NewBlockInstance.connect("block_released",self,"_on_BlockReleased")
 	block_parent.add_child(NewBlockInstance)
 	world_block_dict[given_array_pos] = NewBlockInstance
+
+
+###############################################################################
+
+
+func _on_GameViewCamera_camera_movement(movement_vector):
+	if global_var.grabbed_block is GameBlock:
+		global_var.grabbed_block.position += movement_vector

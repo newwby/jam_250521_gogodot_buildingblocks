@@ -15,8 +15,11 @@ position = Vector2( 64.6554, 60.8799 )
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+margin_left = -0.749153
+margin_top = -1.49831
+margin_right = 39.2508
+margin_bottom = 38.5017
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -28,3 +31,13 @@ margin_bottom = 14.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="MouseHoldTimer" type="Timer" parent="."]
+wait_time = 0.25
+one_shot = true
+
+[node name="ReturnTween" type="Tween" parent="."]
+[connection signal="input_event" from="BlockArea" to="." method="_on_BlockArea_input_event"]
+[connection signal="mouse_entered" from="BlockArea" to="." method="_on_BlockArea_mouse_entered"]
+[connection signal="mouse_exited" from="BlockArea" to="." method="_on_BlockArea_mouse_exited"]
+[connection signal="timeout" from="MouseHoldTimer" to="." method="_on_MouseHoldTimer_timeout"]

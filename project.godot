@@ -14,14 +14,26 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://game_blocks/master_block.gd"
 }, {
+"base": "Node",
+"class": "GameWorld",
+"language": "GDScript",
+"path": "res://game_world/GameWorld.gd"
+}, {
 "base": "Area2D",
 "class": "MouseCollider",
 "language": "GDScript",
 "path": "res://game_logic/MouseCollider.gd"
+}, {
+"base": "Camera2D",
+"class": "WorldCamera",
+"language": "GDScript",
+"path": "res://game_logic/GameViewCamera.gd"
 } ]
 _global_script_class_icons={
 "GameBlock": "",
-"MouseCollider": ""
+"GameWorld": "",
+"MouseCollider": "",
+"WorldCamera": ""
 }
 
 [application]
@@ -38,7 +50,6 @@ global_var="*res://global.gd"
 
 window/size/width=1920
 window/size/height=1080
-window/size/fullscreen=true
 
 [input]
 
