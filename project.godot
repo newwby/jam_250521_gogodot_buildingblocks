@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "GameBlock",
 "language": "GDScript",
 "path": "res://game_blocks/master_block.gd"
+}, {
+"base": "Area2D",
+"class": "MouseCollider",
+"language": "GDScript",
+"path": "res://game_logic/MouseCollider.gd"
 } ]
 _global_script_class_icons={
-"GameBlock": ""
+"GameBlock": "",
+"MouseCollider": ""
 }
 
 [application]
