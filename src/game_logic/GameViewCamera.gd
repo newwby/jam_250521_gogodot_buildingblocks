@@ -1,7 +1,7 @@
 class_name WorldCamera
 extends Camera2D
 
-signal camera_movement(movement_vector)
+signal camera_movement
 
 const BASE_SCROLL_STRENGTH = 12
 var mouse_scroll_strength = BASE_SCROLL_STRENGTH * 2.0
@@ -51,7 +51,7 @@ func _ready():
 	#pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	check_camera_control_input()
 
 ###############################################################################
@@ -79,9 +79,6 @@ func _input(event):
 	# mouse movement handling
 	elif event is InputEventMouseMotion:
 		camera_drag(event)
-
-func _unhandled_input(event):
-	pass
 
 
 ###############################################################################
@@ -112,7 +109,7 @@ func _set_zoom_level(value: float) -> void:
 ###############################################################################
 
 
-func _on_Tween_tween_started(object, key):
+func _on_Tween_tween_started(_object, _key):
 	global_var.camera_moving = true
 
 func _on_Tween_tween_all_completed():
@@ -228,3 +225,13 @@ func immediate_camera_drag(position_adjustment):
 			GameBoundaries["bottom"]-scroll_limit_buffer.y)
 
 ###############################################################################
+
+
+# defunct, removed
+func camera_has_moved():
+	emit_signal("camera_movement")
+
+
+# defunct, removed
+func _on_GameViewCamera_camera_movement():
+	pass # Replace with function body.

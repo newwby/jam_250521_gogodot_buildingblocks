@@ -9,28 +9,40 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node2D",
+"base": "GameCell",
 "class": "GameBlock",
 "language": "GDScript",
-"path": "res://game_blocks/master_block.gd"
+"path": "res://src/game_cells/game_blocks/MasterBlock.gd"
+}, {
+"base": "Node2D",
+"class": "GameCell",
+"language": "GDScript",
+"path": "res://src/game_cells/SuperclassGameCell.gd"
+}, {
+"base": "GameCell",
+"class": "GameTile",
+"language": "GDScript",
+"path": "res://src/game_cells/game_tiles/MasterTile.gd"
 }, {
 "base": "Node",
 "class": "GameWorld",
 "language": "GDScript",
-"path": "res://game_world/GameWorld.gd"
+"path": "res://src/game_world/GameWorld.gd"
 }, {
 "base": "Area2D",
 "class": "MouseCollider",
 "language": "GDScript",
-"path": "res://game_logic/MouseCollider.gd"
+"path": "res://src/game_logic/MouseCollider.gd"
 }, {
 "base": "Camera2D",
 "class": "WorldCamera",
 "language": "GDScript",
-"path": "res://game_logic/GameViewCamera.gd"
+"path": "res://src/game_logic/GameViewCamera.gd"
 } ]
 _global_script_class_icons={
 "GameBlock": "",
+"GameCell": "",
+"GameTile": "",
 "GameWorld": "",
 "MouseCollider": "",
 "WorldCamera": ""
@@ -39,7 +51,7 @@ _global_script_class_icons={
 [application]
 
 config/name="25_05_21_GoGodotGameJam (Building Blocks)"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://src/Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]

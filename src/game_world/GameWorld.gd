@@ -1,7 +1,7 @@
 class_name GameWorld
 extends Node
 
-const TestBlock = preload("res://game_blocks/master_block.tscn")
+const TestBlock = preload("res://src/game_cells/game_blocks/MasterBlock.tscn")
 
 var tile_pixel_size = 100
 var block_pixel_buffer = tile_pixel_size/10
@@ -80,8 +80,11 @@ func add_new_block(spawn_loc, given_array_pos):
 	NewBlockInstance.block_size = Vector2(block_size, block_size)
 	NewBlockInstance.array_pos = given_array_pos
 	NewBlockInstance.position = Vector2(spawn_loc.x+(block_pixel_buffer/2), spawn_loc.y+(block_pixel_buffer/2))
-	NewBlockInstance.connect("block_grabbed",self,"_on_BlockGrabbed")
-	NewBlockInstance.connect("block_released",self,"_on_BlockReleased")
+	
+	# defunct code, set on node in ui instead
+	# NewBlockInstance.connect("block_grabbed",self,"_on_BlockGrabbed")
+	# NewBlockInstance.connect("block_released",self,"_on_BlockReleased")
+	
 	block_parent.add_child(NewBlockInstance)
 	world_block_dict[given_array_pos] = NewBlockInstance
 
