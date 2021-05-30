@@ -8,10 +8,14 @@ var mouse_moving = false
 var camera_moving = false
 
 var grabbed_block = null
+var can_highlight_blocks = true
 
 # defunct values kept for debug testing compatibility
 var button_held_ticks = 0
 var hidden_debug_messages = 0
+
+# global strings for references
+var string_highlight_group = "highlighting"
 
 # debug testing values
 var _enable_all_debug_mode = false setget _set_enable_all_debug_mode
@@ -25,5 +29,6 @@ func _set_enable_all_debug_mode(value):
 		enable_debug_camera_motion_update,
 		enable_debug_camera_click_updates,
 	]
-	for i in debug_switches:
-		i = true
+	if value:
+		for i in debug_switches:
+			i = true

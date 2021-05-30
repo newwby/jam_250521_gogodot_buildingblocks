@@ -90,5 +90,5 @@ func add_new_block(spawn_loc, given_array_pos):
 
 
 func _on_GameViewCamera_camera_movement(movement_vector):
-	if global_var.grabbed_block is GameBlock:
+	if global_var.grabbed_block is GameBlock and false:
 		global_var.grabbed_block.position += movement_vector

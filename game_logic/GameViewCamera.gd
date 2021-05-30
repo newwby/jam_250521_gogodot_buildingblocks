@@ -63,7 +63,7 @@ func _input(event):
 	
 	# mouse click handling
 	if event is InputEventMouseButton:
-		if event.button_index == BUTTON_LEFT:
+		if event.button_index == BUTTON_RIGHT:
 			if event.pressed:
 				global_var.is_rmb_held = true
 				if global_var.enable_debug_camera_click_updates: print("Left button was clicked at ", event.position)
