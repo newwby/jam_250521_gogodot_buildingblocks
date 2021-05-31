@@ -17,13 +17,7 @@ shape = SubResource( 1 )
 
 [node name="SpriteHolder" type="Node2D" parent="."]
 
-[node name="EffectGraphicHolder" type="Node2D" parent="."]
-
-[node name="OnCooldown" type="Sprite" parent="EffectGraphicHolder"]
-visible = false
-texture = ExtResource( 1 )
-
-[node name="DebugSprite" type="ColorRect" parent="."]
+[node name="DebugSprite" type="ColorRect" parent="SpriteHolder"]
 margin_left = -0.749153
 margin_top = -1.49831
 margin_right = 39.2508
@@ -32,6 +26,12 @@ mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="EffectGraphicHolder" type="Node2D" parent="."]
+
+[node name="OnCooldown" type="Sprite" parent="EffectGraphicHolder"]
+position = Vector2( 32, 32 )
+texture = ExtResource( 1 )
 
 [node name="DebugHolder" type="Node2D" parent="."]
 
@@ -64,6 +64,7 @@ __meta__ = {
 }
 [connection signal="block_grabbed" from="." to="." method="_on_Block_block_grabbed"]
 [connection signal="block_released" from="." to="." method="_on_Block_block_released"]
+[connection signal="highlight_new_block" from="." to="." method="_on_Block_highlight_new_block"]
 [connection signal="input_event" from="BlockArea" to="." method="_on_BlockArea_input_event"]
 [connection signal="mouse_entered" from="BlockArea" to="." method="_on_BlockArea_mouse_entered"]
 [connection signal="mouse_exited" from="BlockArea" to="." method="_on_BlockArea_mouse_exited"]

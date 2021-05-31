@@ -23,5 +23,6 @@ mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="highlight_new_tile" from="." to="." method="_on_Tile_highlight_new_tile"]
 [connection signal="mouse_entered" from="TileArea" to="." method="_on_TileArea_mouse_entered"]
 [connection signal="mouse_exited" from="TileArea" to="." method="_on_TileArea_mouse_exited"]

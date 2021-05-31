@@ -25,18 +25,24 @@ func cell_highlight(apply_highlight, apply_visual = true, ignore_highlight_permi
 	if apply_highlight:
 		if global_var.can_highlight_blocks and not _cell_highlighted \
 		or ignore_highlight_permissions and not _cell_highlighted:
-			if apply_visual:
+			if apply_visual\
+			or global_var.enable_debug_tile_highlight and not apply_visual:
 				for i in sprites:
 					i.color.a = 0.75
+					if global_var.enable_debug_tile_highlight and not apply_visual:
+						i.color.b = 1
 			if not self.is_in_group(global_var.string_highlight_group):
 				self.add_to_group(global_var.string_highlight_group)
 		_cell_highlighted = true
 	else:
 		if global_var.can_highlight_blocks and _cell_highlighted \
 		or ignore_highlight_permissions and _cell_highlighted:
-			if apply_visual:
+			if apply_visual\
+			or global_var.enable_debug_tile_highlight and not apply_visual:
 				for i in sprites:
 					i.color.a = 1.0
+					if global_var.enable_debug_tile_highlight and not apply_visual:
+						i.color.b = 0
 		if self.is_in_group(global_var.string_highlight_group):
 			self.remove_from_group(global_var.string_highlight_group)
 		_cell_highlighted = false

@@ -2,11 +2,15 @@
 class_name GameTile
 extends GameCell
 
+signal highlight_new_tile(identity)
+
+var array_pos = Vector2(150,150)
 var tile_size = Vector2(320,320)
+
+var block_child
 
 onready var tile_collision = $TileArea/CollisionArea
 onready var test_tile_sprite = $DebugSprite
-
 
 ###############################################################################
 
@@ -27,11 +31,22 @@ func _ready():
 
 func _on_TileArea_mouse_entered():
 	cell_highlight(true, false)
+	emit_signal("highlight_new_tile", self)
 
 
 func _on_TileArea_mouse_exited():
 	cell_highlight(false, false)
 
+
+# need to end highlighting if a new tile is highlighted
+func _on_Tile_highlight_new_tile(identity):
+	if identity != self:
+		_on_TileArea_mouse_exited()
+
+
+# need to end highlighting if a block is grabbed
+func _on_Tile_block_grabbed():
+		_on_TileArea_mouse_exited()
 
 ###############################################################################
 

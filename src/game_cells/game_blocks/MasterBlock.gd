@@ -4,6 +4,7 @@ extends GameCell
 
 signal block_grabbed()
 signal block_released()
+signal highlight_new_block(identity)
 
 const CLICK_TIMER_WAIT = 0.25
 const RETURN_TIMER_WAIT = 0.05
@@ -25,10 +26,12 @@ var is_clicked_recently = false
 var is_ability_on_cooldown = false
 var _block_highlighted = false
 
+var tile_parent
+
 var use_debug_sprite = true
 var show_debug_array_label = true
 
-onready var test_block_sprite = $DebugSprite
+onready var test_block_sprite = $SpriteHolder/DebugSprite
 #onready var block_sprite = $ColorRect
 onready var block_collision = $BlockArea/CollisionArea
 
@@ -52,6 +55,7 @@ func _ready():
 	timer_setup()
 	block_setup()
 	progress_radial_setup()
+	graphical_effect_setup()
 
 
 func _process(_delta):
@@ -117,13 +121,14 @@ func _on_ReturnTween_tween_completed(_object, _key):
 
 
 func _on_ActivationCooldownTimer_timeout():
-	is_ability_on_cooldown = false
+	set_cooldown(false)
 
 
 # if mouse enters block apply a slight translucency to the block
 func _on_BlockArea_mouse_entered():
 	if not _is_grabbed:
 		cell_highlight(true, true)
+		emit_signal("highlight_new_block", self)
 
 
 # if mouse leaves block unset highlight var and translucency
@@ -133,6 +138,11 @@ func _on_BlockArea_mouse_exited():
 	mouse_hold_tick_count_update(false)
 	if _block_clicked:
 		_block_clicked = false
+
+
+func _on_Block_highlight_new_block(identity):
+	if identity != self:
+		_on_BlockArea_mouse_exited()
 
 # on signal for grabbing a block
 func _on_Block_block_grabbed():
@@ -187,10 +197,15 @@ func sprite_setup():
 # sets up default parameters of miscellaneous graphical effects
 func graphical_effect_setup():
 	#EffectHolder.position = position
-	var corner_offset = block_size / 8
-	CooldownNotification.position = corner_offset
-	CooldownNotification.size = corner_offset
-	CooldownNotification.visible = true
+	var corner_offset = block_size / 2.5
+	var scale_reduction = 1.25
+	var notification_scale = \
+	((corner_offset)/(CooldownNotification.get_rect().size)/scale_reduction)
+	
+	CooldownNotification.position = Vector2.ZERO
+	CooldownNotification.offset = corner_offset
+	CooldownNotification.scale = notification_scale
+	CooldownNotification.visible = false
 
 
 # setting timers to the values for their respective wait times
@@ -207,8 +222,14 @@ func progress_radial_setup():
 	radial_prog.rect_position = half_block_offset/4
 	radial_prog.max_value = MOUSE_HOLD_FOR_DRAG_TICKS-RADIAL_TICK_BUFFER
 	radial_prog.visible = false
-	
-	
+
+
+# this function is called AFTER setting a block to be the child of a new tile
+func update_position_on_move():
+	if tile_parent != null:
+		var position_offset = tile_parent.position + tile_parent.tile_size/16
+		position = position_offset
+
 # make block follow the mouse cursor
 func update_position_if_grabbed():
 	if _is_grabbed:
@@ -284,6 +305,8 @@ func return_block_to_origin():
 
 # graphical function
 func apply_after_image(add_or_remove):
+	# disable visibility of any active graphic effects (i.e. OnCooldown)
+	EffectHolder.visible = !add_or_remove
 	if add_or_remove:
 		for i in sprites:
 			i.color.a = 0.15
@@ -296,11 +319,19 @@ func apply_after_image(add_or_remove):
 
 # function to run on double click
 func activate_block():
-	if not is_ability_on_cooldown:
+	if not is_ability_on_cooldown and global_var.grabbed_block == null:
+		print("func run")
+		# test activation code
 		var switcheroo = test_block_sprite.color.r
 		test_block_sprite.color.r = test_block_sprite.color.b
 		test_block_sprite.color.b = switcheroo
-		is_ability_on_cooldown = true
-		ActivationTimer.start()
+		# start cooldown so can't doubleclick repeatedly
+		set_cooldown(true)
+
+func set_cooldown(cooldown_starts):
+		is_ability_on_cooldown = cooldown_starts
+		CooldownNotification.visible = cooldown_starts
+		if cooldown_starts:
+			ActivationTimer.start()
 
 ###############################################################################
