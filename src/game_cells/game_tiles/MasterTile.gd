@@ -30,12 +30,12 @@ func _ready():
 
 
 func _on_TileArea_mouse_entered():
-	cell_highlight(true, false)
+	cell_highlight(true, true, false, true)
+	global_var.last_highlighted_tile = self
 	emit_signal("highlight_new_tile", self)
 
-
 func _on_TileArea_mouse_exited():
-	cell_highlight(false, false)
+	cell_highlight(false, true, false, true)
 
 
 # need to end highlighting if a new tile is highlighted
@@ -64,4 +64,4 @@ func sprite_setup():
 		test_tile_sprite,
 	]
 	for i in sprites:
-		i.color = Color(0,0.5,0,1)
+		i.color = Color(0,0.5,0,0)

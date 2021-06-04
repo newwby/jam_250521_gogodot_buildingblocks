@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/game_world/GameWorld.gd" type="Script" id=1]
+[ext_resource path="res://sound/se/rustle11.wav" type="AudioStream" id=3]
+[ext_resource path="res://sound/se/rustle10.wav" type="AudioStream" id=4]
+[ext_resource path="res://sound/se/rustle09.wav" type="AudioStream" id=5]
+[ext_resource path="res://sound/se/rustle05.wav" type="AudioStream" id=6]
+[ext_resource path="res://sound/se/rustle06.wav" type="AudioStream" id=7]
+[ext_resource path="res://sound/se/rustle02.wav" type="AudioStream" id=8]
+[ext_resource path="res://sound/OGA-Wolfgang-TheForest.wav" type="AudioStream" id=9]
 
 [node name="World" type="Node"]
 script = ExtResource( 1 )
@@ -19,4 +26,33 @@ __meta__ = {
 [node name="block_parent" type="Node" parent="."]
 
 [node name="GameTimeTimer" type="Timer" parent="."]
-wait_time = 60.0
+autostart = true
+
+[node name="SpeedChangeCooldownTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="AudioSE" type="Node2D" parent="."]
+
+[node name="rustle2" type="AudioStreamPlayer" parent="AudioSE"]
+stream = ExtResource( 8 )
+
+[node name="rustle5" type="AudioStreamPlayer" parent="AudioSE"]
+stream = ExtResource( 6 )
+
+[node name="rustle6" type="AudioStreamPlayer" parent="AudioSE"]
+stream = ExtResource( 7 )
+
+[node name="rustle9" type="AudioStreamPlayer" parent="AudioSE"]
+stream = ExtResource( 5 )
+
+[node name="rustle10" type="AudioStreamPlayer" parent="AudioSE"]
+stream = ExtResource( 4 )
+
+[node name="rustle11" type="AudioStreamPlayer" parent="AudioSE"]
+stream = ExtResource( 3 )
+
+[node name="AudioBGM" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 9 )
+volume_db = -10.0
+autoplay = true
+[connection signal="timeout" from="GameTimeTimer" to="." method="_on_GameTimeTimer_timeout"]

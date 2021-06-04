@@ -3,14 +3,28 @@ extends Camera2D
 
 signal camera_movement
 
+var texture_day_phase_day = preload("res://art/phase_day.png")
+var texture_day_phase_evening = preload("res://art/phase_evening.png")
+var texture_day_phase_morning = preload("res://art/phase_morning.png")
+var texture_day_phase_night = preload("res://art/phase_night.png")
+
+const SCREEN_ALPHA_TINT_MAGNITUDE_DAY = 0.01
+const SCREEN_ALPHA_TINT_MAGNITUDE_TRANSITION = 0.25
+const SCREEN_ALPHA_TINT_MAGNITUDE_NIGHT = 0.55
+const SCREEN_ALPHA_TINT_TRANSITION_DURATION = 2.0
 const BASE_SCROLL_STRENGTH = 12
+const BASE_ZOOM_DURATION = 0.3
+
+var current_screen_alpha_tint
 var mouse_scroll_strength = BASE_SCROLL_STRENGTH * 2.0
 var keyboard_scroll_strength = BASE_SCROLL_STRENGTH
 
+var total_game_hours_played = 0
+
 # Lower cap for the `_zoom_level`.
-export var min_zoom := 0.25
+export var min_zoom := 0.35
 # Upper cap for the `_zoom_level`.
-export var max_zoom := 2.0
+export var max_zoom := 1.0
 # Controls how much we increase or decrease the `_zoom_level` on every turn of the scroll wheel.
 export var zoom_factor := 0.02
 # Duration of the zoom's tween animation.
@@ -23,7 +37,7 @@ var GameViewport = Vector2(0,0) # this is set/updated when called
 var camera_control_settings = {
 	"WASD" : true,
 	"Drag_RMB" : true,
-	"Drag_LMB" : false,
+	"Drag_LMB" : false, # defunct, TODO please remove all references
 }
 
 var game_boundaries_set = false
@@ -40,6 +54,16 @@ var GameBoundaries = {
 onready var GameCamera = self
 onready var GameWorld = $World
 onready var CameraTween = $Tween
+onready var DayNightPhaseSprite = $UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeIcons/VBox_Right/DayPhaseIcon
+onready var GameMinuteRadial = $UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeIcons/VBox_Left/GameMinuteRadialProg
+onready var GameHourLabel = $UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeLabels/GameHourLabel
+onready var GamePhaseLabel = $UILayer/Margin_GameTime/VBox_GameTime/GamePhaseLabel
+onready var GameSpeedLabel = $UILayer/Margin_GameTime/VBox_GameTime/GameSpeedLabel
+onready var ArrayPositionLabel = $UILayer/Margin_GameTime/VBox_GameTime/ArrayPositionLabel
+onready var TimeScoreLabel = $UILayer/Margin_GameTime/VBox_GameTime/TimePlayedLabel
+onready var LeafScoreLabel = $UILayer/Margin_GameTime/VBox_GameTime/MulchScoreLabel
+onready var FullScreenTint = $UILayer/NightScreenTint
+onready var ScreenTintTween = $UILayer/NightScreenTint/TintTween
 
 ###############################################################################
 
@@ -48,7 +72,7 @@ func _ready():
 	initialise_gameworld()
 	set_camera_limits()
 	set_camera_starting_pos()
-	#pass
+	set_base_camera_zoom()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -112,9 +136,102 @@ func _set_zoom_level(value: float) -> void:
 func _on_Tween_tween_started(_object, _key):
 	global_var.camera_moving = true
 
+
 func _on_Tween_tween_all_completed():
 	global_var.camera_moving = false
 
+
+# recieve signal to update ui elements relating to game speed
+func _on_World_update_speed(new_speed):
+	if new_speed in [GameWorld.GameSpeed.NORMAL, \
+	GameWorld.GameSpeed.ACCELERATED, \
+	GameWorld.GameSpeed.MAXIMUM,
+	GameWorld.GameSpeed.DEVELOPER]:
+		var speed_string
+		if new_speed == GameWorld.GameSpeed.NORMAL:
+			speed_string = "1x Speed"
+		elif new_speed == GameWorld.GameSpeed.ACCELERATED:
+			speed_string = "2x Speed"
+		elif new_speed == GameWorld.GameSpeed.MAXIMUM:
+			speed_string = "3x Speed"
+		elif new_speed == GameWorld.GameSpeed.DEVELOPER:
+			speed_string = "4x Speed (DevMode)"
+		GameSpeedLabel.text = speed_string
+
+
+# receives signal from GameWorld
+# func then updates UI representations of game time
+# i.e label text, radial progress value, screen tint
+func _on_World_update_time(current_hour, current_minute, current_day_phase):
+	var previous_hour = int(GameHourLabel.text)
+	# update ui label and prog radial
+	GameHourLabel.text = str(current_hour)
+	GameMinuteRadial.value = current_minute
+	var hour_increment = (current_hour - previous_hour)
+	# is the hour incrementing or resetting?
+	if hour_increment == 1 or current_hour == 0 and current_minute == 0:
+		total_game_hours_played += 1
+		TimeScoreLabel.text = "Hours Passed: " + str(total_game_hours_played)
+	
+	# update the ui element representing the day phase
+	update_day_phase_sprite(current_day_phase)
+	
+	# pass if screen tint tween is running
+	if not ScreenTintTween.is_active():
+		if global_var.enable_debug_day_phase_checks: print("day-phase-tween check1")
+		# get the target screen tint by phase of day
+		var screen_tint_check 
+		if current_day_phase == GameWorld.DayPhase.MORNING or \
+		current_day_phase == GameWorld.DayPhase.EVENING:
+			screen_tint_check = SCREEN_ALPHA_TINT_MAGNITUDE_TRANSITION
+		elif current_day_phase == GameWorld.DayPhase.DAY:
+			screen_tint_check = SCREEN_ALPHA_TINT_MAGNITUDE_DAY
+		elif current_day_phase == GameWorld.DayPhase.NIGHT:
+			screen_tint_check = SCREEN_ALPHA_TINT_MAGNITUDE_NIGHT
+		
+		# get the current screen tint
+		var current_screen_tint = FullScreenTint.modulate.a
+		
+		if global_var.enable_debug_day_phase_checks: print("day-phase-tween check2")
+		
+		
+		if current_screen_tint != screen_tint_check:
+			tween_screen_tint(current_screen_tint, screen_tint_check)
+	
+
+
+# changes graphic/tint of day phase sprite
+# changes text of game phase label
+func update_day_phase_sprite(given_day_phase):
+	# set the graphic for time of day
+	if given_day_phase == GameWorld.DayPhase.MORNING:
+		#DayNightPhaseSprite.modulate = Color(0.85,0.30,0.25,1.0)
+		DayNightPhaseSprite.texture = texture_day_phase_morning
+		GamePhaseLabel.text = "MORNING"
+	elif given_day_phase == GameWorld.DayPhase.DAY:
+		#DayNightPhaseSprite.modulate = Color(0.85,0.75,0.10,1.0)
+		DayNightPhaseSprite.texture = texture_day_phase_day
+		GamePhaseLabel.text = "DAY"
+	elif given_day_phase == GameWorld.DayPhase.EVENING:
+		#DayNightPhaseSprite.modulate = Color(0.45,0.20,0.75,1.0)
+		DayNightPhaseSprite.texture = texture_day_phase_evening
+		GamePhaseLabel.text = "EVENING"
+	elif given_day_phase == GameWorld.DayPhase.NIGHT:
+		#DayNightPhaseSprite.modulate = Color(0.25,0.15,0.45,1.0)
+		DayNightPhaseSprite.texture = texture_day_phase_night
+		GamePhaseLabel.text = "NIGHT"
+
+
+# this function takes the screen tint color rect and applies a blue
+# tint to it, or removes a blue tint, over 4 seconds
+# under normal gametime settings should never fire more than once at a time
+func tween_screen_tint(current_blue_tint, new_magnitude):
+	if global_var.enable_debug_day_phase_checks: print("day-phase-tween/screen-tint current blue tint at ", current_blue_tint)
+	if global_var.enable_debug_day_phase_checks: print("day-phase-tween/screen-tint magnitude changed to ", new_magnitude)
+	ScreenTintTween.interpolate_property(FullScreenTint, "modulate:a", \
+	current_blue_tint, new_magnitude, SCREEN_ALPHA_TINT_TRANSITION_DURATION, \
+	Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	ScreenTintTween.start()
 
 ###############################################################################
 
@@ -146,6 +263,11 @@ func set_camera_limits():
 		cam.limit_top = GameBoundaries["top"]
 		cam.limit_bottom = GameBoundaries["bottom"]
 
+
+func set_base_camera_zoom():
+	zoom_duration = 1.5
+	_set_zoom_level(0.75)
+	zoom_duration = BASE_ZOOM_DURATION
 
 func check_camera_zoom_input():
 	if Input.is_action_pressed("zoom_in"):
@@ -223,6 +345,14 @@ func immediate_camera_drag(position_adjustment):
 			clamp(GameCamera.position.y + position_adjustment.y, \
 			GameBoundaries["top"]+scroll_limit_buffer.y, \
 			GameBoundaries["bottom"]-scroll_limit_buffer.y)
+
+func _onUpdateArrayPosLabel(given_tile):
+	if given_tile is GameTile:
+		ArrayPositionLabel.text = str(given_tile.array_pos)
+
+
+func _on_World_pass_mulch_score(new_score):
+	LeafScoreLabel.text = "Mulch Score: " + str(new_score)
 
 ###############################################################################
 

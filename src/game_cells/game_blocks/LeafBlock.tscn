@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/game_cells/game_blocks/technical_blocks/NodeHolder.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/game_cells/game_blocks/LeafBlock.gd" type="Script" id=2]
+
+[node name="LeafBlock" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="NodeHolder" parent="." instance=ExtResource( 1 )]
+
+[editable path="NodeHolder"]

@@ -9,10 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "GameBlock",
+"class": "BranchBlock",
+"language": "GDScript",
+"path": "res://src/game_cells/game_blocks/BranchBlock.gd"
+}, {
+"base": "Timer",
+"class": "FadeTimer",
+"language": "GDScript",
+"path": "res://src/game_logic/node_attachment/FadeTimer.gd"
+}, {
 "base": "GameCell",
 "class": "GameBlock",
 "language": "GDScript",
 "path": "res://src/game_cells/game_blocks/MasterBlock.gd"
+}, {
+"base": "GameBlock",
+"class": "GameBoundaryBlock",
+"language": "GDScript",
+"path": "res://src/game_cells/game_blocks/technical_blocks/GameBoundaryBlock.gd"
 }, {
 "base": "Node2D",
 "class": "GameCell",
@@ -29,10 +44,20 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/game_world/GameWorld.gd"
 }, {
-"base": "Area2D",
+"base": "GameBlock",
+"class": "LeafBlock",
+"language": "GDScript",
+"path": "res://src/game_cells/game_blocks/LeafBlock.gd"
+}, {
+"base": "Reference",
 "class": "MouseCollider",
 "language": "GDScript",
-"path": "res://src/game_logic/MouseCollider.gd"
+"path": "res://src/game_logic/node_attachment/MouseCollider.gd"
+}, {
+"base": "GameBlock",
+"class": "ShrubBlock",
+"language": "GDScript",
+"path": "res://src/game_cells/game_blocks/ShrubBlock.gd"
 }, {
 "base": "Camera2D",
 "class": "WorldCamera",
@@ -40,23 +65,67 @@ _global_script_classes=[ {
 "path": "res://src/game_logic/GameViewCamera.gd"
 } ]
 _global_script_class_icons={
+"BranchBlock": "",
+"FadeTimer": "",
 "GameBlock": "",
+"GameBoundaryBlock": "",
 "GameCell": "",
 "GameTile": "",
 "GameWorld": "",
+"LeafBlock": "",
 "MouseCollider": "",
+"ShrubBlock": "",
 "WorldCamera": ""
 }
 
 [application]
 
-config/name="25_05_21_GoGodotGameJam (Building Blocks)"
+config/name="Building Blocks"
+config/description="
+Game developed in the Godot Game Engine
+by Daniel Newby
+(aka DanDoesAThing)
+
+https://github.com/newwby
+https://www.instagram.com/dandoesathing/
+https://dandoesathing.com/
+
+Developed for the 2021 Go Godot Game Jam
+
+--------------------------------------------------------------------------------
+
+CONTROLS
+
+Click and hold, then drag, with right mouse button to pick up blocks
+
+Click and drag with left mouse button to scroll the camera
+Use WASD to control the camera
+Press Q/E or Page Up/Page Down to zoom in and out
+
+--------------------------------------------------------------------------------
+
+Art and sound resources provided by the following contributors:
+
+----------------
+
+Retro-Lines, by v3x3d, (https://v3x3d.itch.io/),
+Licensed under Creative Commons Zero v1.0 Universal
+
+20 Rustles of Dry Leaves, by qubodup (https://opengameart.org/users/qubodup),
+Licensed under https://creativecommons.org/publicdomain/zero/1.0/
+
+The Forest 8-bit theme, by Wolfgang (https://opengameart.org/users/wolfgang),
+Licensed under https://creativecommons.org/publicdomain/zero/1.0/"
 run/main_scene="res://src/Main.tscn"
-config/icon="res://icon.png"
+boot_splash/bg_color=Color( 0.0196078, 0.0196078, 0.0196078, 1 )
 
 [autoload]
 
 global_var="*res://global.gd"
+
+[debug]
+
+gdscript/warnings/enable=false
 
 [display]
 
@@ -117,10 +186,35 @@ debugging_command={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":66,"unicode":0,"echo":false,"script":null)
  ]
 }
+game_speed_1x={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":49,"unicode":0,"echo":false,"script":null)
+ ]
+}
+game_speed_2x={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":50,"unicode":0,"echo":false,"script":null)
+ ]
+}
+game_speed_3x={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":51,"unicode":0,"echo":false,"script":null)
+ ]
+}
+game_speed_4x_devonly={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":52,"unicode":0,"echo":false,"script":null)
+ ]
+}
+
+[layer_names]
+
+2d_render/layer_1="MainLayer"
 
 [rendering]
 
 quality/driver/driver_name="GLES2"
+quality/2d/use_nvidia_rect_flicker_workaround=true
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
 environment/default_environment="res://default_env.tres"

@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/rustle10.wav-3a76fc055c47c1a3c6eafa8350bfe40a.sample"
+
+[deps]
+
+source_file="res://sound/se/rustle10.wav"
+dest_files=[ "res://.import/rustle10.wav-3a76fc055c47c1a3c6eafa8350bfe40a.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

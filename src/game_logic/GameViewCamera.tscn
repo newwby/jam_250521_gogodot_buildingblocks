@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/game_world/GameWorld.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/game_logic/GameViewCamera.gd" type="Script" id=2]
+[ext_resource path="res://art/progress_clock_large.png" type="Texture" id=4]
 
 [node name="GameViewCamera" type="Camera2D"]
 current = true
@@ -17,31 +18,117 @@ script = ExtResource( 2 )
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
-[node name="MarginContainer" type="MarginContainer" parent="UILayer"]
+[node name="Margin_GameTime" type="MarginContainer" parent="UILayer"]
 margin_left = 16.0
 margin_top = 16.0
 margin_right = 40.0
 margin_bottom = 40.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UILayer/MarginContainer"]
-margin_right = 98.0
-margin_bottom = 24.0
+[node name="VBox_GameTime" type="VBoxContainer" parent="UILayer/Margin_GameTime"]
+margin_right = 103.0
+margin_bottom = 186.0
+mouse_filter = 2
 
-[node name="HourDescLabel" type="Label" parent="UILayer/MarginContainer/HBoxContainer"]
-margin_top = 5.0
+[node name="HBox_GameTimeIcons" type="HBoxContainer" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_right = 103.0
+margin_bottom = 60.0
+mouse_filter = 2
+
+[node name="VBox_Left" type="VBoxContainer" parent="UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeIcons"]
+margin_right = 60.0
+margin_bottom = 60.0
+mouse_filter = 2
+
+[node name="GameMinuteRadialProg" type="TextureProgress" parent="UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeIcons/VBox_Left"]
+margin_right = 60.0
+margin_bottom = 60.0
+mouse_filter = 2
+max_value = 60.0
+value = 1.0
+texture_progress = ExtResource( 4 )
+fill_mode = 4
+
+[node name="VBox_Right" type="VBoxContainer" parent="UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeIcons"]
+margin_left = 64.0
+margin_right = 103.0
+margin_bottom = 60.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DayPhaseIcon" type="Sprite" parent="UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeIcons/VBox_Right"]
+offset = Vector2( 32, 32 )
+
+[node name="HBox_GameTimeLabels" type="HBoxContainer" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 64.0
+margin_right = 103.0
+margin_bottom = 78.0
+mouse_filter = 2
+
+[node name="GameHourDescLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeLabels"]
 margin_right = 47.0
-margin_bottom = 19.0
+margin_bottom = 14.0
 text = "HOUR: "
 
-[node name="HourLabel" type="Label" parent="UILayer/MarginContainer/HBoxContainer"]
+[node name="GameHourLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime/HBox_GameTimeLabels"]
 margin_left = 51.0
-margin_top = 5.0
 margin_right = 59.0
-margin_bottom = 19.0
+margin_bottom = 14.0
 text = "0"
+
+[node name="GamePhaseLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 82.0
+margin_right = 103.0
+margin_bottom = 96.0
+text = "DAYTIME"
+uppercase = true
+
+[node name="GameSpeedLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 100.0
+margin_right = 103.0
+margin_bottom = 114.0
+text = "1x"
+
+[node name="ArrayPositionLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 118.0
+margin_right = 103.0
+margin_bottom = 132.0
+text = "(0,0)"
+
+[node name="DividerLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 136.0
+margin_right = 103.0
+margin_bottom = 150.0
+
+[node name="TimePlayedLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 154.0
+margin_right = 103.0
+margin_bottom = 168.0
+text = "Hours Passed: 0"
+
+[node name="MulchScoreLabel" type="Label" parent="UILayer/Margin_GameTime/VBox_GameTime"]
+margin_top = 172.0
+margin_right = 103.0
+margin_bottom = 186.0
+text = "Mulch Score: 0"
+
+[node name="NightScreenTint" type="ColorRect" parent="UILayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0, 0, 0.156863, 0.498039 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TintTween" type="Tween" parent="UILayer/NightScreenTint"]
 [connection signal="camera_movement" from="." to="." method="_on_GameViewCamera_camera_movement"]
+[connection signal="pass_mulch_score" from="World" to="." method="_on_World_pass_mulch_score"]
+[connection signal="update_speed" from="World" to="." method="_on_World_update_speed"]
+[connection signal="update_time" from="World" to="." method="_on_World_update_time"]
 [connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]
 [connection signal="tween_started" from="Tween" to="." method="_on_Tween_tween_started"]
